@@ -2,6 +2,8 @@
 
 A console app I wrote to aid in my study of japanese. It automatically generates anki decks based on a japanese text. For example, if you have a song that you enjoy but don't really understand you can use the app to make a deck with all the words from the song. Then, once you have learned all the cards, you will (hopefully) understand the whole song. 
 
+![Example card](/card-example.png?raw=true "Example card")
+
 The app takes text as input, extracts words from it, and creates an anki card for each of them. The word definitions are fetched from [jisho](https://jisho.org/). You can either choose to use `tiny-segmenter` or `nagisa` as the text segmentation engine. `nagisa` tends to produce fewer garbage cards and generally do a better job, but it is also harder to set up.
 
 # Running the app with tiny-segmenter
