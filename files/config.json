@@ -1,0 +1,6 @@
+{
+    "nagato-api-url":"http://localhost:8000/",
+
+    "input":"files/inputs/Omoi-Teo.txt",
+    "input-type":"text-nagato"
+}
