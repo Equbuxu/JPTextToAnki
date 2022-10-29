@@ -2,7 +2,7 @@ import * as WordExtractor from './text-word-extractor';
 import * as CachedJisho from './cached-jisho';
 import { WordCardModel, CreateModelForWord } from './models/word-card-model';
 import * as fs from 'fs';
-import { init, KanjiCardModel } from './models/kanji-card-model';
+import { KanjiCardModel } from './models/kanji-card-model';
 import * as WordCardView from './views/word-card-view';
 import { encodeCardsAsCsv } from './card-encoder';
 import { CreateKanjiCardsForWord } from './models/kanji-card-model';
@@ -11,8 +11,6 @@ import { getFromConfig } from './config';
 
 run();
 async function run() {
-    await init();
-
     const inputText = fs.readFileSync(getFromConfig('input'), 'utf8');
     console.log('Looking for words...');
     const words = await extractWordsFromText(inputText);

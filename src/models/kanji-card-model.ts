@@ -1,16 +1,7 @@
 import { WordCardModel } from "./word-card-model";
 import * as CachedJisho from "../cached-jisho";
 
-import Kuroshiro from "kuroshiro";
-import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
-import levenshtein from 'js-levenshtein';
 import { splitToKanji } from "../word-helper";
-
-let kuroshiro : Kuroshiro;
-export async function init() {
-    kuroshiro = new Kuroshiro();
-    await kuroshiro.init(new KuromojiAnalyzer());
-}
 
 export class KanjiCardModel {
     constructor(kanji: string, kun: string[], on: string[], sourceWord: string, sourceWordReading: string, allWordsWithThisKanji: string[]) {
