@@ -64,8 +64,8 @@ async function fetchWordCards(words: string[]): Promise<WordCardModel[]> {
 
 async function extractWordsFromText(text: string): Promise<string[] | undefined> {
     const type: string = getFromConfig("input-type");
-    if (type === "text-nagato") {
-        return WordExtractor.ExtractWordsFromText_Nagato(text);
+    if (type === "text-nagisa") {
+        return WordExtractor.ExtractWordsFromText_nagisa(text);
     } else if (type === "text-tiny-segmenter") {
         return WordExtractor.ExtractWordsFromText_TinySegmenter(text);
     }

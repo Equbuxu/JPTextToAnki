@@ -1,6 +1,6 @@
 {
-    "nagato-api-url":"http://localhost:8000/",
+    "nagisa-api-url":"http://localhost:8000/",
 
-    "input":"files/inputs/Omoi-Teo.txt",
-    "input-type":"text-nagato"
+    "input":"files/inputs/private/Japanese_【初心者でも作れる！】iPadでアニメを作る方法をわかりやすく解説してくれるオンライン講座『Coloso_』.txt",
+    "input-type":"text-nagisa"
 }

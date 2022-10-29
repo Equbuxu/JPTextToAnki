@@ -11,8 +11,8 @@ export function ExtractWordsFromText_TinySegmenter(inputText: string): string[] 
     return PreprocessWordsFromWordList(segments);
 }
 
-export async function ExtractWordsFromText_Nagato(inputText: string): Promise<string[]> {
-    const wordList: string = (await axios.get(getFromConfig("nagato-api-url"), { params: { text: inputText } })).data;
+export async function ExtractWordsFromText_nagisa(inputText: string): Promise<string[]> {
+    const wordList: string = (await axios.get(getFromConfig("nagisa-api-url"), { params: { text: inputText } })).data;
     let split = wordList.split('\n');
     return PreprocessWordsFromWordList(split);
 }
