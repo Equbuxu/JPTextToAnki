@@ -1,5 +1,7 @@
 import { Card } from "../card";
-import { KanjiModel, SenseModel, WordCardModel } from "../models/word-card-model";
+import { SenseModel, WordCardModel } from "../models/word-card-model";
+import { KanjiModel } from "../models/models-common";
+import { ViewsCommon } from "./views-common";
 
 export function GetCard(model: WordCardModel): Card {
     return new Card(createFront(model), createBack(model));
@@ -23,28 +25,7 @@ function createBack(model: WordCardModel): string {
         Kanji:
     </div>`}
 
-    ${model.kanji.map(kanji => createKanjiView(kanji)).join("")}
-    `;
-}
-
-function createKanjiView(model: KanjiModel): string {
-    return '' + 
-    `<div>
-        <div>
-            <a href="${encodeURI('https://kanji.koohii.com/study/kanji/' + model.kanji)}">${model.kanji}</a>
-            ${model.jlpt == null ? '' : `(${model.jlpt})`}: ${model.meaning}
-        </div>
-
-        ${model.kun.length == 0 ? '' : 
-        `<div>
-            Kun: ${model.kun.join(', ')}
-        </div>`}
-
-        ${model.on.length == 0 ? '' : 
-        `<div>
-            On: ${model.on.join(', ')}
-        </div>`}
-    </div>
+    ${model.kanji.map(kanji => ViewsCommon.createKanjiView(kanji)).join("")}
     `;
 }
 

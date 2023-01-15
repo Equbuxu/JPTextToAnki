@@ -8,10 +8,25 @@ import { encodeCardsAsCsv } from './card-encoder';
 import { CreateKanjiCardsForWord } from './models/kanji-card-model';
 import * as KanjiCardView from './views/kanji-card-view';    
 import { getFromConfig } from './config';
+import * as path from 'path';
 
-run();
-async function run() {
-    const inputText = fs.readFileSync(getFromConfig('input'), 'utf8');
+start();
+
+async function start() {
+    const configPath = getFromConfig('input');
+    const files = getFileOrAllFiles(configPath);
+    if (files === null) {
+        console.log("Error: no files to process");
+        return;
+    }
+    for (const filepath of files) {
+        console.log(`Processing file ${filepath}`);
+        await processFile(filepath);
+    }
+}
+
+async function processFile(path: string) {
+    const inputText = fs.readFileSync(path, 'utf8');
     console.log('Looking for words...');
     const words = await extractWordsFromText(inputText);
     if (words === undefined) {
@@ -32,16 +47,42 @@ async function run() {
     const kanjiCards = kanjiModels.map(model => KanjiCardView.GetCard(model));
     const kanjiDeck = encodeCardsAsCsv(kanjiCards);
 
-    fs.writeFileSync("files/output/output-words.txt", wordDeck, "utf-8");
-    fs.writeFileSync("files/output/output-kanji.txt", kanjiDeck, "utf-8");
+    let filename = getFilename(path);
+    if (filename === null) {
+        filename = "unnamed.txt";
+    }
+
+    fs.writeFileSync(`files/output/words-${filename}`, wordDeck, "utf-8");
+    fs.writeFileSync(`files/output/kanji-${filename}`, kanjiDeck, "utf-8");
     console.log('Done...');
+}
+
+function getFileOrAllFiles(configPath: string): string[] | null {
+    if (!fs.existsSync(configPath)) {
+        return null;
+    }
+    const isDirectory = fs.lstatSync(configPath).isDirectory();
+    if (!isDirectory) {
+        return [configPath];
+    }
+    return fs.readdirSync(configPath, {withFileTypes: true})
+        .filter(file => file.isFile())
+        .map(file => path.resolve(configPath, file.name));
+}
+
+function getFilename(path: string): string | null {
+    const parts = path.replace(/\\/g, '/').split('/');
+    if (parts.length == 0) {
+        return null;
+    }
+    return parts[parts.length - 1];
 }
 
 async function fetchKanjiCards(wordModels: WordCardModel[]): Promise<KanjiCardModel[]> {
     const kanjiModels: KanjiCardModel[] = []
     for (const word of wordModels) {
         const models = await CreateKanjiCardsForWord(wordModels, word);
-        models.forEach(model => console.log(`${model.kanji}, `));
+        models.forEach(model => console.log(`${model.kanji.kanji}, `));
         kanjiModels.push(...models);
     }
     CachedJisho.saveCache();

@@ -2,21 +2,20 @@ import { WordCardModel } from "./word-card-model";
 import * as CachedJisho from "../cached-jisho";
 
 import { splitToKanji } from "../word-helper";
+import { KanjiModel, ModelsCommon } from "./models-common";
 
 export class KanjiCardModel {
-    constructor(kanji: string, kun: string[], on: string[], sourceWord: string, sourceWordReading: string, allWordsWithThisKanji: string[]) {
+    constructor(kanji: KanjiModel, sourceWord: string, sourceWordReading: string, sourceWordOriginalSearch: string, allWordsWithThisKanji: string[]) {
         this.kanji = kanji;
-        this.kun = kun;
-        this.on = on;
         this.sourceWord = sourceWord;
         this.sourceWordReading = sourceWordReading;
+        this.sourceWordOriginalSearch = sourceWordOriginalSearch;
         this.allWordsWithThisKanji = allWordsWithThisKanji;
     }
-    kanji: string;
-    kun: string[];
-    on: string[];
+    kanji: KanjiModel;
     sourceWord: string;
     sourceWordReading: string;
+    sourceWordOriginalSearch: string;
     allWordsWithThisKanji: string[];
 }
 
@@ -27,12 +26,12 @@ export async function CreateKanjiCardsForWord(wordCards: WordCardModel[], word: 
 }
 
 async function CreateKanjiCardForKanji(kanji: string, sourceWord: WordCardModel, wordCards: WordCardModel[]): Promise<KanjiCardModel | null> {
-    const jishoData = await CachedJisho.searchForKanji(kanji);
-    if (!jishoData.found) {
+    const kanjiModel = await ModelsCommon.GetKanjiModel(kanji);
+    if (kanjiModel == null) {
         return null;
     }
     const words = findWordsWithKanji(kanji, wordCards);
-    return new KanjiCardModel(kanji, jishoData.kunyomi, jishoData.onyomi, sourceWord.mainFormWithKanji, sourceWord.mainFormReading, words);
+    return new KanjiCardModel(kanjiModel, sourceWord.mainFormWithKanji, sourceWord.mainFormReading, sourceWord.originalSearchText, words);
 }
 
 function findWordsWithKanji(kanji: string, wordCards: WordCardModel[]): string[] {

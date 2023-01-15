@@ -1,5 +1,6 @@
 import * as CachedJisho from '../cached-jisho';
 import { splitToKanji, removeDuplicateStrings } from '../word-helper'
+import { KanjiModel, ModelsCommon } from './models-common';
 
 export class WordCardModel {
     constructor(mainFormWithKanji: string, mainFormReading: string, originalSearchText: string, senses: SenseModel[], kanji: KanjiModel[]) {
@@ -16,21 +17,6 @@ export class WordCardModel {
     kanji: KanjiModel[];
 
     originalSearchText: string;
-}
-
-export class KanjiModel {
-    constructor(kanji: string, kun: string[], on: string[], meaning: string, jlpt: null | string) {
-        this.kanji = kanji;
-        this.kun = kun;
-        this.on = on;
-        this.jlpt = jlpt;
-        this.meaning = meaning;
-    }
-    meaning: string;
-    kanji: string;
-    kun: string[];
-    on: string[];
-    jlpt: null | string;
 }
 
 export class SenseModel {
@@ -68,10 +54,7 @@ export async function CreateModelForWord(rawWord: string): Promise<WordCardModel
         return new SenseModel(sense.parts_of_speech, sense.english_definitions, notes)
     });
 
-    const kanji: KanjiModel[] = await Promise.all(kanjiStrings.map(async kanjiString => {
-        const fetchedKanji = await CachedJisho.searchForKanji(kanjiString);
-        return new KanjiModel(kanjiString, fetchedKanji.kunyomi, fetchedKanji.onyomi, fetchedKanji.meaning, fetchedKanji.jlptLevel);
-    }))
+    const kanji: KanjiModel[] = (await Promise.all(kanjiStrings.map(ModelsCommon.GetKanjiModel))).filter(a => a != null) as KanjiModel[];
 
     return new WordCardModel(mainFormWithKanji, mainFormReading, rawWord, senses, kanji);
 }
