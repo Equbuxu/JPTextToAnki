@@ -1,9 +1,12 @@
 {
     "comment-input":"Input file or folder",
-    "input":"files/inputs/private/space-tourism.txt",
+    "input":"files/inputs/private/lucky-star-after-eating.txt",
 
     "comment-input-type":"Segmentation library to be used. 'text-tiny-segmenter' or 'text-nagisa'",
     "input-type":"text-nagisa",
 
-    "nagisa-api-url":"http://localhost:8000/"
+    "nagisa-api-url":"http://localhost:8000/",
+
+    "comment-use-kanji-from-jisho":"If true, the kanji cards are created using kanji from the words found in Jisho, meaning that even if the original text had the word spelled in kana, the kanji from it's kanji spelling will still be included. If false, only the kanji that appear in the original text are included.",
+    "use-kanji-from-jisho":true
 }

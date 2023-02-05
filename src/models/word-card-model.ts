@@ -1,5 +1,5 @@
 import * as CachedJisho from '../cached-jisho';
-import { splitToKanji, removeDuplicateStrings } from '../word-helper'
+import { WordHelper } from '../word-helper'
 import { KanjiModel, ModelsCommon } from './models-common';
 
 export class WordCardModel {
@@ -43,7 +43,7 @@ export async function CreateModelForWord(rawWord: string): Promise<WordCardModel
         return null;
     }
 
-    const kanjiStrings: string[] = removeDuplicateStrings(splitToKanji(mainFormWithKanji));
+    const kanjiStrings: string[] = WordHelper.removeDuplicateStrings(WordHelper.splitToKanji(mainFormWithKanji));
 
     const senses: SenseModel[] = word.senses.map(sense => {
         const notes : string[] = [...sense.info];

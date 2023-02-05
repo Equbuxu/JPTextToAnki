@@ -1,5 +1,5 @@
 import TinySegmenter from "tiny-segmenter";
-import { kanjiRegex, removeDuplicateStrings, splitToKanji } from "./word-helper";
+import { WordHelper } from "./word-helper";
 import axios from 'axios';
 import { getFromConfig } from "./config";
 
@@ -23,12 +23,12 @@ export function PreprocessWordsFromWordList(inputWords: string[]): string[] {
 }
 
 function removeNonJapaneseAndDuplicates(segments: string[]): string[] {
-    return removeDuplicateStrings(
+    return WordHelper.removeDuplicateStrings(
         segments.filter(val => {
         if (val.length == 0)
             return false;
         if (val.length == 1)
-            return val.match(kanjiRegex) != null;
+            return val.match(WordHelper.kanjiRegex) != null;
         return val.match(kanaAndKanjiRegex) != null;
     }));
 }

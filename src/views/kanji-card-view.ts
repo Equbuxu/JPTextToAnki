@@ -7,22 +7,20 @@ export function GetCard(model: KanjiCardModel): Card {
 }
 
 function createFront(model: KanjiCardModel): string {
-    return `<span class="card-front">${model.kanji.kanji}</span>`;
+    return `${model.kanji.kanji}`;
 }
 
 function createBack(model: KanjiCardModel): string {
     return '' +
-    `<div>
-        <b>${model.sourceWord}</b>
-        <span class="inline-weak"><a href="${encodeURI('https://jisho.org/search/' + model.sourceWordOriginalSearch)}">${model.sourceWordOriginalSearch}</a></span>
-    </div>
+    `
+    ${model.allWordsWithThisKanji.map(word => `
     <div>
-        <b>${model.sourceWordReading}</b>
+        <b>${word.kanjiWord};</b>
+        <b>${word.kanaWord};</b>
+        <span class="inline-weak"><a href="${encodeURI('https://jisho.org/search/' + word.searchedWord)}">${word.searchedWord}</a></span>
     </div>
+    `).join('')}
+    
     ${ViewsCommon.createKanjiView(model.kanji)}
-    <div class="japanki-kanji-card-readings">Words w/ this kanji:</div> 
-    <div>
-        ${model.allWordsWithThisKanji.join(", ")}
-    </div>
     `;
 }

@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { KanjiCardModel } from './models/kanji-card-model';
 import * as WordCardView from './views/word-card-view';
 import { encodeCardsAsCsv } from './card-encoder';
-import { CreateKanjiCardsForWord } from './models/kanji-card-model';
+import { CreateKanjiCardsForWords } from './models/kanji-card-model';
 import * as KanjiCardView from './views/kanji-card-view';    
 import { getFromConfig } from './config';
 import * as path from 'path';
@@ -37,7 +37,7 @@ async function processFile(path: string) {
     console.log('Fetching info for word cards...');
     const wordModels: WordCardModel[] = await fetchWordCards(words);
 
-    console.log('Fetching info for kanji cards...');
+    console.log('Fetching info for kanji cards... (processing all at once, without progress indication)');
     const kanjiModels = await fetchKanjiCards(wordModels);
     
     console.log('Creating cards...');
@@ -79,14 +79,10 @@ function getFilename(path: string): string | null {
 }
 
 async function fetchKanjiCards(wordModels: WordCardModel[]): Promise<KanjiCardModel[]> {
-    const kanjiModels: KanjiCardModel[] = []
-    for (const word of wordModels) {
-        const models = await CreateKanjiCardsForWord(wordModels, word);
-        models.forEach(model => console.log(`${model.kanji.kanji}, `));
-        kanjiModels.push(...models);
-    }
+    const kanjiModels = await CreateKanjiCardsForWords(wordModels);
+
     CachedJisho.saveCache();
-    return kanjiModels
+    return kanjiModels;
 }
 
 async function fetchWordCards(words: string[]): Promise<WordCardModel[]> {

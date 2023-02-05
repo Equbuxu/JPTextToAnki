@@ -44,5 +44,5 @@ function createSenseView(model: SenseModel): string {
 }
 
 function createFront(model: WordCardModel): string {
-    return `<span class="card-front">${model.mainFormWithKanji}</span>`;
+    return `${model.mainFormWithKanji}`;
 }
