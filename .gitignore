@@ -1,6 +1,7 @@
 build
 files/inputs/private
 .vscode
+audio_files
 
 # Logs
 logs

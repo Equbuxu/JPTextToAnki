@@ -3,7 +3,7 @@ import { KanjiCardModel } from "../models/kanji-card-model";
 import { ViewsCommon } from "./views-common";
 
 export function GetCard(model: KanjiCardModel): Card {
-    return new Card(createFront(model), createBack(model));
+    return new Card(createFront(model), createBack(model), 'Kanji', 'Back', []);
 }
 
 function createFront(model: KanjiCardModel): string {

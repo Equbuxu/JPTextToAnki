@@ -1,10 +1,11 @@
-import { Card } from "../card";
+import { Card, CardAudio } from "../card";
 import { SenseModel, WordCardModel } from "../models/word-card-model";
 import { KanjiModel } from "../models/models-common";
 import { ViewsCommon } from "./views-common";
+import { AudioFileData } from "../audio-files-catalog";
 
 export function GetCard(model: WordCardModel): Card {
-    return new Card(createFront(model), createBack(model));
+    return new Card(createFront(model), createBack(model), 'Word', 'Back', model.audio.map(a => new CardAudio(a.audioPath, a.audioFilename)));
 }
 
 function createBack(model: WordCardModel): string {
@@ -19,6 +20,18 @@ function createBack(model: WordCardModel): string {
     </div>
 
     ${model.senses.map(sense => createSenseView(sense)).join("")}
+
+    ${model.audio.length == 0 ? '' : 
+    `<div class="title">
+        Audio:
+    </div>`}
+
+    ${model.audio.map(audio => 
+    `<div>
+        <div class="weak">${audio.sentenceEng}</div>
+        ${audio.sentenceJp}[sound:${audio.audioFilename}]
+    </div>`
+    ).join("")}
 
     ${model.kanji.length == 0 ? '' : 
     `<div class="title">

@@ -1,22 +1,42 @@
+import { AudioFileData, AudioFilesCatalog } from '../audio-files-catalog';
 import * as CachedJisho from '../cached-jisho';
+import { CardAudio } from '../card';
 import { WordHelper } from '../word-helper'
 import { KanjiModel, ModelsCommon } from './models-common';
+import * as crypto from 'crypto';
+import * as path from 'path';
 
 export class WordCardModel {
-    constructor(mainFormWithKanji: string, mainFormReading: string, originalSearchText: string, senses: SenseModel[], kanji: KanjiModel[]) {
+    constructor(mainFormWithKanji: string, mainFormReading: string, originalSearchText: string, senses: SenseModel[], kanji: KanjiModel[], audio: AudioSentenseModel[]) {
         this.mainFormWithKanji = mainFormWithKanji;
         this.mainFormReading = mainFormReading;
         this.senses = senses;
         this.kanji = kanji;
         this.originalSearchText = originalSearchText;
+        this.audio = audio;
     }
     mainFormWithKanji: string;
     mainFormReading: string;
 
     senses: SenseModel[];
     kanji: KanjiModel[];
+    audio: AudioSentenseModel[];
 
     originalSearchText: string;
+}
+
+export class AudioSentenseModel
+{
+    constructor(audioPath : string, audioFilename : string, sentenseJp: string, sentenseEng: string) {
+        this.audioPath = audioPath;
+        this.audioFilename = audioFilename;
+        this.sentenceEng = sentenseEng;
+        this.sentenceJp = sentenseJp;
+    }
+    audioPath : string;
+    audioFilename : string;
+    sentenceJp: string; 
+    sentenceEng: string;
 }
 
 export class SenseModel {
@@ -56,5 +76,18 @@ export async function CreateModelForWord(rawWord: string): Promise<WordCardModel
 
     const kanji: KanjiModel[] = (await Promise.all(kanjiStrings.map(ModelsCommon.GetKanjiModel))).filter(a => a != null) as KanjiModel[];
 
-    return new WordCardModel(mainFormWithKanji, mainFormReading, rawWord, senses, kanji);
+    const audio = AudioFilesCatalog.search(mainFormWithKanji, 3)
+        .map(a => new AudioSentenseModel(getFullAudioPath(a), getUniqueFilename(a.audio_jap), a.jap, a.eng));
+
+    return new WordCardModel(mainFormWithKanji, mainFormReading, rawWord, senses, kanji, audio);
+}
+
+function getUniqueFilename(pathStr: string): string {
+    const hash = crypto.createHash('md5').update(pathStr).digest('hex');
+    const ext = path.extname(pathStr);
+    return `${hash}${ext}`;
+}
+
+function getFullAudioPath(data: AudioFileData): string {
+    return process.cwd() + '\\audio_files\\' + data.audio_jap.replace('/', '\\');
 }

@@ -4,16 +4,25 @@ import { WordCardModel, CreateModelForWord } from './models/word-card-model';
 import * as fs from 'fs';
 import { KanjiCardModel } from './models/kanji-card-model';
 import * as WordCardView from './views/word-card-view';
-import { encodeCardsAsCsv } from './card-encoder';
 import { CreateKanjiCardsForWords } from './models/kanji-card-model';
 import * as KanjiCardView from './views/kanji-card-view';    
 import { getFromConfig } from './config';
 import * as path from 'path';
+import { AnkiApi } from './anki-api';
 
 start();
 
 async function start() {
+    const ankiPrepResult = await AnkiApi.prepareNoteTypes();
+    if (ankiPrepResult instanceof Error) {
+        console.log('Error while preparing Anki, aborting. Error:');
+        console.log(ankiPrepResult.message);
+        return;
+    }
+
     const configPath = getFromConfig('input');
+    const deckName = getFromConfig('deck-name');
+    
     const files = getFileOrAllFiles(configPath);
     if (files === null) {
         console.log("Error: no files to process");
@@ -21,11 +30,11 @@ async function start() {
     }
     for (const filepath of files) {
         console.log(`Processing file ${filepath}`);
-        await processFile(filepath);
+        await processFile(filepath, deckName, files.length > 1);
     }
 }
 
-async function processFile(path: string) {
+async function processFile(path: string, deckName: string, appendFilenameToDeck: boolean) {
     const inputText = fs.readFileSync(path, 'utf8');
     console.log('Looking for words...');
     const words = await extractWordsFromText(inputText);
@@ -42,19 +51,29 @@ async function processFile(path: string) {
     
     console.log('Creating cards...');
     const wordCards = wordModels.map(model => WordCardView.GetCard(model));
-    const wordDeck = encodeCardsAsCsv(wordCards);
-
     const kanjiCards = kanjiModels.map(model => KanjiCardView.GetCard(model));
-    const kanjiDeck = encodeCardsAsCsv(kanjiCards);
 
-    let filename = getFilename(path);
-    if (filename === null) {
-        filename = "unnamed.txt";
+    const finalDeckName = appendFilenameToDeck ? `${deckName}-${getFilename(path)}` : deckName;
+    
+    const wordSendResult = await AnkiApi.sendCardsToAnki(wordCards, 'Generated Words::' + finalDeckName, AnkiApi.wordModelName);
+    if (wordSendResult != null) {
+        console.log(`Sent ${wordCards.length} word cards to anki, with ${wordSendResult.length} errors. First error: ${wordSendResult[0].message}`);
     }
-
-    fs.writeFileSync(`files/output/words-${filename}`, wordDeck, "utf-8");
-    fs.writeFileSync(`files/output/kanji-${filename}`, kanjiDeck, "utf-8");
+    
+    const kanjiSendResult = await AnkiApi.sendCardsToAnki(kanjiCards, 'Generated Kanji::' + finalDeckName, AnkiApi.kanjiModelName);
+    if (kanjiSendResult != null) {
+        console.log(`Sent ${kanjiCards.length} kanji cards to anki, with ${kanjiSendResult.length} errors. First error: ${kanjiSendResult[0].message}`);
+    }
+    
     console.log('Done...');
+}
+
+function getFilename(path: string): string | null {
+    const parts = path.replace(/\\/g, '/').split('/');
+    if (parts.length == 0) {
+        return null;
+    }
+    return parts[parts.length - 1];
 }
 
 function getFileOrAllFiles(configPath: string): string[] | null {
@@ -68,14 +87,6 @@ function getFileOrAllFiles(configPath: string): string[] | null {
     return fs.readdirSync(configPath, {withFileTypes: true})
         .filter(file => file.isFile())
         .map(file => path.resolve(configPath, file.name));
-}
-
-function getFilename(path: string): string | null {
-    const parts = path.replace(/\\/g, '/').split('/');
-    if (parts.length == 0) {
-        return null;
-    }
-    return parts[parts.length - 1];
 }
 
 async function fetchKanjiCards(wordModels: WordCardModel[]): Promise<KanjiCardModel[]> {

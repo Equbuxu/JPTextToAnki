@@ -1,11 +1,15 @@
 {
     "comment-input":"Input file or folder",
-    "input":"files/inputs/private/lucky-star-after-eating.txt",
+    "input":"files/inputs/private/test-text.txt",
+
+    "comment-deck-name":"The name that will be used for the deck in Anki",
+    "deck-name":"Just a test text",
 
     "comment-input-type":"Segmentation library to be used. 'text-tiny-segmenter' or 'text-nagisa'",
     "input-type":"text-nagisa",
 
     "nagisa-api-url":"http://localhost:8000/",
+    "anki-connect-api-url":"http://localhost:8765",
 
     "comment-use-kanji-from-jisho":"If true, the kanji cards are created using kanji from the words found in Jisho, meaning that even if the original text had the word spelled in kana, the kanji from it's kanji spelling will still be included. If false, only the kanji that appear in the original text are included.",
     "use-kanji-from-jisho":true
