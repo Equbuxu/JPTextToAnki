@@ -1,16 +1,25 @@
 {
     "comment-input":"Input file or folder",
-    "input":"files/inputs/private/test-text.txt",
+    "input":"files/inputs/Omoi - Teo.txt",
 
-    "comment-deck-name":"The name that will be used for the deck in Anki",
-    "deck-name":"Just a test text",
-
-    "comment-input-type":"Segmentation library to be used. 'text-tiny-segmenter' or 'text-nagisa'",
+    "comment-input-type":"Segmentation library to be used. 'text-tiny-segmenter', 'text-nagisa', or 'word-list' (for lists of words where each word is on a separate line)",
     "input-type":"text-nagisa",
+
+    "comment-include-audio": "Whether to use audioFilesCatalog.json to include example sentences with audio into the notes",
+    "include-audio": true,
+
+    "comment-audio-count-limit": "Max number of example sentences with audio on a word card",
+    "audio-count-limit": 5,
+
+    "comment-kanji-word-count-limit": "Max number of words with the card's kanji on a kanji card",
+    "kanji-word-count-limit": 8,
+
+    "comment-update-duplicate-notes": "Behavior when the note you are trying to add is a duplicate. If true, duplicate notes will be updated, if false, they won't be added.",
+    "update-duplicate-notes": true,
 
     "nagisa-api-url":"http://localhost:8000/",
     "anki-connect-api-url":"http://localhost:8765",
 
     "comment-use-kanji-from-jisho":"If true, the kanji cards are created using kanji from the words found in Jisho, meaning that even if the original text had the word spelled in kana, the kanji from it's kanji spelling will still be included. If false, only the kanji that appear in the original text are included.",
-    "use-kanji-from-jisho":true
+    "use-kanji-from-jisho": true
 }

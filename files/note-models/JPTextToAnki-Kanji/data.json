@@ -1,0 +1,14 @@
+{
+    "fields": [
+        "Kanji",
+        "WordsWithKanji",
+        "KanjiInfo"
+    ],
+    "cardTemplates": [
+        {
+            "Name": "Kanji Card",
+            "FrontFilename": "front-template.html",
+            "BackFilename": "back-template.html"
+        }
+    ]
+}

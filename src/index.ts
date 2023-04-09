@@ -13,7 +13,7 @@ import { AnkiApi } from './anki-api';
 start();
 
 async function start() {
-    const ankiPrepResult = await AnkiApi.prepareNoteTypes();
+    const ankiPrepResult = await AnkiApi.uploadNoteModels();
     if (ankiPrepResult instanceof Error) {
         console.log('Error while preparing Anki, aborting. Error:');
         console.log(ankiPrepResult.message);
@@ -21,7 +21,6 @@ async function start() {
     }
 
     const configPath = getFromConfig('input');
-    const deckName = getFromConfig('deck-name');
     
     const files = getFileOrAllFiles(configPath);
     if (files === null) {
@@ -30,11 +29,11 @@ async function start() {
     }
     for (const filepath of files) {
         console.log(`Processing file ${filepath}`);
-        await processFile(filepath, deckName, files.length > 1);
+        await processFile(filepath);
     }
 }
 
-async function processFile(path: string, deckName: string, appendFilenameToDeck: boolean) {
+async function processFile(path: string) {
     const inputText = fs.readFileSync(path, 'utf8');
     console.log('Looking for words...');
     const words = await extractWordsFromText(inputText);
@@ -50,21 +49,25 @@ async function processFile(path: string, deckName: string, appendFilenameToDeck:
     const kanjiModels = await fetchKanjiCards(wordModels);
     
     console.log('Creating cards...');
-    const wordCards = wordModels.map(model => WordCardView.GetCard(model));
-    const kanjiCards = kanjiModels.map(model => KanjiCardView.GetCard(model));
+    const wordCards = wordModels.map(model => WordCardView.GetNote(model));
+    const kanjiCards = kanjiModels.map(model => KanjiCardView.GetNote(model));
 
-    const finalDeckName = appendFilenameToDeck ? `${deckName}-${getFilename(path)}` : deckName;
+    const finalDeckName = getFilename(path);
     
-    const wordSendResult = await AnkiApi.sendCardsToAnki(wordCards, 'Generated Words::' + finalDeckName, AnkiApi.wordModelName);
-    if (wordSendResult != null) {
-        console.log(`Sent ${wordCards.length} word cards to anki, with ${wordSendResult.length} errors. First error: ${wordSendResult[0].message}`);
+    if (wordCards.length > 0){
+        const wordSendResult = await AnkiApi.sendNotesToAnki(wordCards, 'Generated Words::' + finalDeckName, wordCards[0].noteModel.name);
+        if (wordSendResult != null) {
+            console.log(`Sent ${wordCards.length} word cards to anki, with ${wordSendResult.length} errors. First error: ${wordSendResult[0].message}`);
+        }
     }
     
-    const kanjiSendResult = await AnkiApi.sendCardsToAnki(kanjiCards, 'Generated Kanji::' + finalDeckName, AnkiApi.kanjiModelName);
-    if (kanjiSendResult != null) {
-        console.log(`Sent ${kanjiCards.length} kanji cards to anki, with ${kanjiSendResult.length} errors. First error: ${kanjiSendResult[0].message}`);
+    if (kanjiCards.length > 0) {
+        const kanjiSendResult = await AnkiApi.sendNotesToAnki(kanjiCards, 'Generated Kanji::' + finalDeckName, kanjiCards[0].noteModel.name);
+        if (kanjiSendResult != null) {
+            console.log(`Sent ${kanjiCards.length} kanji cards to anki, with ${kanjiSendResult.length} errors. First error: ${kanjiSendResult[0].message}`);
+        }
     }
-    
+        
     console.log('Done...');
 }
 
@@ -73,7 +76,7 @@ function getFilename(path: string): string | null {
     if (parts.length == 0) {
         return null;
     }
-    return parts[parts.length - 1];
+    return parts[parts.length - 1].split('.')[0];
 }
 
 function getFileOrAllFiles(configPath: string): string[] | null {
@@ -116,6 +119,8 @@ async function extractWordsFromText(text: string): Promise<string[] | undefined>
         return WordExtractor.ExtractWordsFromText_nagisa(text);
     } else if (type === "text-tiny-segmenter") {
         return WordExtractor.ExtractWordsFromText_TinySegmenter(text);
+    } else if (type == "word-list") {
+        return WordExtractor.PreprocessWordsFromWordList(text.replace(/\r/g, '').split('\n'));
     }
     return undefined;
 }

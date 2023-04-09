@@ -1,0 +1,36 @@
+.card {
+    font-size: 24pt;
+    text-align: left;
+    color: black;
+    background-color: #FFFAF0;
+    font-family: yuumichou;
+    line-height: 1.2em;
+}
+
+.weak {
+    font-size: 16pt;
+    color: gray;
+    display: block;
+    margin-top: 10px;
+    line-height: 0.9;
+}
+
+.inline-weak {
+    font-size: 16pt;
+    color: gray;
+}
+
+.card-front {
+    font-size: 35pt;
+}
+
+.title {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 30px;
+    height: 35px
+}
+
+.info {
+    font-size: 16pt;
+}

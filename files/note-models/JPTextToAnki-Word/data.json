@@ -1,0 +1,22 @@
+{
+    "fields": [
+        "Word",
+        "WordReading",
+        "WordAsAppearsInText",
+        "Senses",
+        "Audio",
+        "KanjiInfo"
+    ],
+    "cardTemplates": [
+        {
+            "Name": "Word Regular",
+            "FrontFilename": "front-template.html",
+            "BackFilename": "back-template.html"
+        },
+        {
+            "Name": "Word Kana",
+            "FrontFilename": "kana-front-template.html",
+            "BackFilename": "kana-back-template.html"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 build
 files/inputs/private
+files/inputs/private-stash
 .vscode
 audio_files
 
