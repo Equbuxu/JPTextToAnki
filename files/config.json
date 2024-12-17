@@ -1,6 +1,6 @@
 {
     "comment-input":"Input file or folder",
-    "input":"files/inputs/Omoi - Teo.txt",
+    "input":"files/inputs/private/Plane flight crimes.txt",
 
     "comment-input-type":"Segmentation library to be used. 'text-tiny-segmenter', 'text-nagisa', or 'word-list' (for lists of words where each word is on a separate line)",
     "input-type":"text-nagisa",
